@@ -2,10 +2,11 @@
 
 
 #include "Cannon.h"
-
-#include "Projectile.h"
 #include "Components\StaticMeshComponent.h"
 #include "Components\ArrowComponent.h"
+#include "Components\SceneComponent.h"
+#include "Projectile.h"
+#include "DrawDebugHelpers.h"
 
 // Sets default values
 ACannon::ACannon()
@@ -70,7 +71,7 @@ void ACannon::Fire()
 
 	}
 
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("Shells is: %d"), Shells));
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("Shells is: %d"), Shells));
 
 	GetWorld()->GetTimerManager().SetTimer(ReloadTimer, this, &ACannon::Reload, ReloadTime, false);
 }
@@ -108,11 +109,11 @@ void ACannon::Burst()
 
 	if (CannonType == ECannonType::FireProjectile)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Purple, FString::Printf(TEXT("Fire projectile")));
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Purple, FString::Printf(TEXT("Fire projectile")));
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Purple, FString::Printf(TEXT("Fire trace")));
+		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Purple, FString::Printf(TEXT("Fire trace")));
 	}
 
 	GetWorld()->GetTimerManager().SetTimer(BurstTimer, this, &ACannon::Burst, BurstInterval, false);

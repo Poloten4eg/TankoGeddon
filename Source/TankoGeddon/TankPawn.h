@@ -21,10 +21,17 @@ public:
 	void RotateRight(float Value);
 
 	void Fire();
+	void FireSpecial();
 
 	virtual void Tick( float DeltaSeconds ) override;
 
 	virtual void BeginPlay() override;
+
+	void SetupCannon(TSubclassOf<ACannon> newCannonClass);
+	void SwitchCannon();
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Turret")
+	TArray<TSubclassOf<class ACannon>> CannonsClasses;
 
 protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
@@ -38,6 +45,9 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = " Components")
 	class UCameraComponent* Camera;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret | Component")
+	class UArrowComponent* CannonSetupPoint;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret | Component")
 	TSubclassOf<ACannon> CannonClass;
@@ -57,10 +67,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
 	float RotateInterpolationKey = 0.1f;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Turret")
+	int32 MaxCannons = 2;
+
 	UPROPERTY()
 	class ATankController* TankController;
-
-	void SetupCannon();
 
 private:
 	float TargetForwardAxisValue = 0.0f;

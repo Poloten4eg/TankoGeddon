@@ -41,4 +41,10 @@ protected:
 
 	UFUNCTION()
 	void Fire();
+
+	UFUNCTION()
+	void FireSpecial();
+
+	UFUNCTION()
+	void SwitchCannon();
 };

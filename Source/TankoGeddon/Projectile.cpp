@@ -1,6 +1,10 @@
-﻿#include "Projectile.h"
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "Projectile.h"
 #include "Components\SceneComponent.h"
 #include "Components\StaticMeshComponent.h"
+
 
 AProjectile::AProjectile()
 {
@@ -33,3 +37,4 @@ void AProjectile::OnMeshOverlapBegin(class UPrimitiveComponent* OverlappedComp, 
     OtherActor->Destroy();
     Destroy();
 }
+

@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -21,7 +21,7 @@ protected:
 	class UStaticMeshComponent* ProjectileMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
-	float MoveSpeed = 400.0f;
+	float MoveSpeed = 100.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	float MoveRate = 0.01f;

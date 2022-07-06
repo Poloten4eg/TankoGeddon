@@ -8,6 +8,7 @@
 #include "TankController.h"
 #include "Kismet\KismetMathLibrary.h"
 #include "Cannon.h"
+#include "Components\ArrowComponent.h"
 
 
 ATankPawn::ATankPawn()
@@ -30,6 +31,9 @@ ATankPawn::ATankPawn()
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm);
+
+	CannonSetupPoint = CreateDefaultSubobject<UArrowComponent>(TEXT("CannonSetupPoint"));
+	CannonSetupPoint->SetupAttachment(TurretMesh);
 }
 
 void ATankPawn::MoveForward(float Value)
@@ -55,6 +59,14 @@ void ATankPawn::Fire()
 	}
 }
 
+void ATankPawn::FireSpecial()
+{
+	if (Cannon)
+	{
+		Cannon->FireSpecial();
+	}
+}
+
 void ATankPawn::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
@@ -70,7 +82,7 @@ void ATankPawn::Tick(float DeltaSeconds)
 	CurrentRotateAxisValue = FMath::Lerp(CurrentRotateAxisValue, RotateRightAxisValue, InterpolationKey);
 	float YawRotation = RotationSpeed * CurrentRotateAxisValue * DeltaSeconds;
 
-	UE_LOG(LogTemp, Warning, TEXT("CurrentRotateAxis Value: %f, RotateRightAxisValue: %f"), CurrentRotateAxisValue, RotateRightAxisValue);
+	//UE_LOG(LogTemp, Warning, TEXT("CurrentRotateAxis Value: %f, RotateRightAxisValue: %f"), CurrentRotateAxisValue, RotateRightAxisValue);
 
 	FRotator CurrentRotation = GetActorRotation();
 
@@ -96,16 +108,16 @@ void ATankPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, 0.0f));
+	//SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, 0.0f));
 
 	TankController = Cast<ATankController>(GetController());
 
-	SetupCannon();
+	SetupCannon(CannonClass);
 }
 
-void ATankPawn::SetupCannon()
+void ATankPawn::SetupCannon(TSubclassOf<ACannon> newCannonClass)
 {
-	if (!CannonClass)
+	if (!newCannonClass)
 	{
 		return;
 	}
@@ -117,8 +129,19 @@ void ATankPawn::SetupCannon()
 	params.Instigator = this;
 	params.Owner = this;
 
-	Cannon = GetWorld()->SpawnActor<ACannon>(CannonClass, params);
+	Cannon = GetWorld()->SpawnActor<ACannon>(newCannonClass, params);
 
-	Cannon->AttachToComponent(TurretMesh, FAttachmentTransformRules::SnapToTargetIncludingScale);
+	Cannon->AttachToComponent(CannonSetupPoint, FAttachmentTransformRules::SnapToTargetIncludingScale);
 }
 
+void ATankPawn::SwitchCannon()
+{
+	if (CannonsClasses.Num() >= 2) {
+		auto lastCannon = CannonsClasses[CannonsClasses.Num() - 1];
+		for (int32 i = CannonsClasses.Num() - 1; i > 0 ; --i) {
+			CannonsClasses[i] = CannonsClasses[i - 1];
+		}
+		CannonsClasses[0] = lastCannon;
+	}
+	
+}
