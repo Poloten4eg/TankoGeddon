@@ -7,6 +7,9 @@
 #include "Components\SceneComponent.h"
 #include "Projectile.h"
 #include "DrawDebugHelpers.h"
+#include "ProjectilePool.h"
+#include "Particles\ParticleSystemComponent.h"
+#include "Components\AudioComponent.h"
 
 // Sets default values
 ACannon::ACannon()
@@ -21,6 +24,11 @@ ACannon::ACannon()
 
 	ProjectileSpawnPoint = CreateDefaultSubobject<UArrowComponent>(TEXT("ProjectileSpawnPoint"));
 	ProjectileSpawnPoint->SetupAttachment(CannonSceneComponent);
+
+	ShootEffect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("ShootEffect"));
+	ShootEffect->SetupAttachment(ProjectileSpawnPoint);
+
+	AudioEffect = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioEffect"));
 }
 
 void ACannon::Fire()
@@ -33,14 +41,25 @@ void ACannon::Fire()
 	bCanFire = false;
 	Shells--;
 
+	ShootEffect->ActivateSystem();
+	AudioEffect->Play();
+
 	if (CannonType == ECannonType::FireProjectile)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::Printf(TEXT("Fire projectile")));
 		
-		AProjectile* projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, ProjectileSpawnPoint->GetComponentLocation(), ProjectileSpawnPoint->GetComponentRotation());
-		if (projectile)
+		if (ProjectilePool)
 		{
-			projectile->Start();
+			ProjectilePool->GetProjectile(ProjectileSpawnPoint->GetComponentLocation(), ProjectileSpawnPoint->GetComponentRotation());
+		}
+		else
+		{
+			AProjectile* projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, ProjectileSpawnPoint->GetComponentLocation(), ProjectileSpawnPoint->GetComponentRotation());
+			if (projectile)
+			{
+				projectile->SetOwner(this);
+				projectile->Start();
+			}
 		}
 	}
 	else
@@ -90,6 +109,19 @@ void ACannon::FireSpecial()
 void ACannon::Reload()
 {
 	bCanFire = true;
+}
+
+void ACannon::CreateProjectilePool()
+{
+	if(ProjectilePoolClass)
+		ProjectilePool = GetWorld()->SpawnActor<AProjectilePool>(ProjectilePoolClass, ProjectileSpawnPoint->GetComponentLocation(), ProjectileSpawnPoint->GetComponentRotation());
+}
+
+void ACannon::BeginPlay()
+{
+	Super::BeginPlay();
+
+	CreateProjectilePool();
 }
 
 void ACannon::Burst()

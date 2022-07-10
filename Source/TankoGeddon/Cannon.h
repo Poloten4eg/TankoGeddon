@@ -7,6 +7,7 @@
 #include "GameStruct.h"
 #include "Cannon.generated.h"
 
+class AProjectilePool;
 UCLASS()
 class TANKOGEDDON_API ACannon : public AActor
 {
@@ -18,9 +19,15 @@ public:
 	void Fire();
 	void FireSpecial();
 
+	bool IsReadyToFire() { return bCanFire; };
+
 	void Reload();
 
+	void CreateProjectilePool();
+
 protected:
+	virtual void BeginPlay() override;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	class UStaticMeshComponent* CannonMesh;
 
@@ -50,6 +57,18 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile")
 	TSubclassOf<class AProjectile> ProjectileClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	TSubclassOf<AProjectilePool> ProjectilePoolClass;
+
+	UPROPERTY()
+	AProjectilePool* ProjectilePool;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	class UParticleSystemComponent* ShootEffect;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	class UAudioComponent* AudioEffect;
 
 private:
 	bool bCanFire = true;

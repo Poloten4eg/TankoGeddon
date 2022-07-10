@@ -15,6 +15,10 @@ public:
 	AProjectile();
 
 	void Start();
+
+	void Deactivate();
+
+	bool bIsActivation = false;
 	
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
@@ -29,7 +33,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	float Damage = 10.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	float DeactivateTime = 5.0f;
+
 	FTimerHandle MoveTimer;
+	FTimerHandle DeactivateTimer;
 
 	void Move();
 

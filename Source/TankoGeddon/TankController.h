@@ -22,7 +22,7 @@ public:
 	class ATankPawn* TankPawn;
 
 	UPROPERTY()
-	FVector MousePos;
+	FVector MousePos = FVector::Zero();
 
 	FVector GetMousePosition() { return MousePos; }
 
@@ -45,6 +45,5 @@ protected:
 	UFUNCTION()
 	void FireSpecial();
 
-	UFUNCTION()
-	void SwitchCannon();
+	void ChangeWeapon();
 };
