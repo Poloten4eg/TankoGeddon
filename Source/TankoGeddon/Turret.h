@@ -7,13 +7,12 @@
 #include "DamageTaker.h"
 #include "GameStruct.h"
 #include "MachinePawn.h"
-#include "Scorable.h"
 #include "Turret.generated.h"
 
 class UStaticMeshComponent;
 class ACannon;
 UCLASS()
-class TANKOGEDDON_API ATurret : public AMachinePawn, public IScorable
+class TANKOGEDDON_API ATurret : public AMachinePawn
 {
 	GENERATED_BODY()
 	
@@ -27,7 +26,7 @@ protected:
 	void RotateToPlayer();
 	bool IsPlayerInRange();
 	bool CanFire();
-	virtual int GetPoint() const;
+
 	UPROPERTY()
 	class APawn* PlayerPawn;
 

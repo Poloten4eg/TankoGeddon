@@ -11,6 +11,7 @@
 
 class UStaticMeshComponent;
 class ACannon;
+class ATargetPoint;
 UCLASS()
 class TANKOGEDDON_API ATankPawn : public AMachinePawn
 {
@@ -18,19 +19,22 @@ class TANKOGEDDON_API ATankPawn : public AMachinePawn
 
 public:
 	ATankPawn();
-	FString PlayerName = "Poloten4eg";
+
 	void MoveForward(float Value);
 	void MoveRight(float Value);
 	void RotateRight(float Value);
 
 	void FireSpecial();
 	void ChangeWeapon();
-
+	bool SwapController = false;
+	
 	virtual void Tick( float DeltaSeconds ) override;
 
 	//AI
 	UFUNCTION()
-	TArray<FVector> GetPatrollingPoints() { return PattrollingPoints; }
+	TArray<FVector> GetPatrollingPoints();
+
+	void SetPatrollingPoints(TArray<ATargetPoint*> NewPatrollingPoints);
 
 	UFUNCTION()
 	float GetAccurency() { return MovementAccurency; }
@@ -42,6 +46,8 @@ public:
 	void RotateTurretTo(FVector TargetPosition);
 
 	FVector GetEyesPosition();
+	
+	void SwapControllerTurret();
 
 
 protected:
@@ -73,7 +79,7 @@ protected:
 
 	//AI components
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI | Components", Meta = (MakeEditWidget = true))
-	TArray<FVector> PattrollingPoints;
+	TArray<ATargetPoint*> PatrollingPoints;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI | Components")
 	float MovementAccurency = 30.0f;

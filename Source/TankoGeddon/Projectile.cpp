@@ -6,6 +6,7 @@
 #include "Components\StaticMeshComponent.h"
 #include "DamageTaker.h"
 #include "GameStruct.h"
+#include "Scorable.h"
 
 
 AProjectile::AProjectile()
@@ -47,36 +48,20 @@ void AProjectile::OnMeshOverlapBegin(class UPrimitiveComponent* OverlappedComp, 
     UE_LOG(LogTemp, Warning, TEXT("Projectile collided with %s, collided with component %s"), *OtherActor->GetName(), *OverlappedComp->GetName());
 
     AActor* owner = GetOwner();
-    if (owner)
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Owner is %s"), *owner->GetName());
-    }
-    else
-    {
-        UE_LOG(LogTemp, Warning, TEXT("Owner is null"));
-    }
-
     AActor* ownerByOwner = owner != nullptr ? owner->GetOwner() : nullptr; 
-	if (ownerByOwner)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("OwnerByOwner is %s"), *ownerByOwner->GetName());
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Owner is null"));
-	}
-    /*if (owner != nullptr)
-    {
-        ownerByOwner = owner->GetOwner();
-    }
-    else
-    {
-        ownerByOwner = nullptr;
-    } */
 
     if (OtherActor != owner && OtherActor != ownerByOwner)
     {
         IDamageTaker* damageTakerActor = Cast<IDamageTaker>(OtherActor);
+        IScorable* ScorableActor = Cast<IScorable>(OtherActor);
+       
+        float ScoreValue = 0.0f;
+
+        if (ScorableActor)
+        {
+            ScoreValue = ScorableActor->GetPoints();
+        }
+
         if (damageTakerActor)
         {
             FDamageData damageData;
@@ -85,6 +70,14 @@ void AProjectile::OnMeshOverlapBegin(class UPrimitiveComponent* OverlappedComp, 
             damageData.DamageMaker = this;
 
             damageTakerActor->TakeDamage(damageData);
+
+            if (OtherActor->IsActorBeingDestroyed() && ScoreValue != 0.0f)
+            {
+                if (OnKilled.IsBound())
+                {
+                    OnKilled.Broadcast(ScoreValue);
+                }
+            }
         }
         else
         {

@@ -26,7 +26,6 @@ ATurret::ATurret()
 
 }
 
-
 void ATurret::BeginPlay()
 {
 	Super::BeginPlay();
@@ -49,10 +48,7 @@ void ATurret::Targeting()
 		}
 	}
 }
-int ATurret::GetPoint() const
-{
-	return ScorePoints;
-}
+
 void ATurret::RotateToPlayer()
 {
 	FRotator targetRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), PlayerPawn->GetActorLocation());

@@ -29,6 +29,7 @@ public:
 	virtual void Tick( float DeltaSeconds ) override;
 
 	virtual void SetPawn(APawn* InPawn) override;
+	void OnSwapController();
 protected:
 	UFUNCTION()
 	void MoveForward(float Value);

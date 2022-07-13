@@ -10,6 +10,7 @@
 #include "Cannon.h"
 #include "Components\ArrowComponent.h"
 #include "HealthComponent.h"
+#include "Engine\TargetPoint.h"
 
 
 ATankPawn::ATankPawn()
@@ -99,13 +100,20 @@ void ATankPawn::Tick(float DeltaSeconds)
 	
 }
 
-void ATankPawn::OnPointsReceived(int InPoints)
- {
- 	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red,
- 								 FString::Printf(TEXT("Score: %d"), Points));
- 	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Green,
-									 FString::Printf(TEXT("%s + %d Points"),*PlayerName, InPoints));
- }
+TArray<FVector> ATankPawn::GetPatrollingPoints()
+{
+	TArray<FVector> points;
+	for (ATargetPoint* point : PatrollingPoints)
+	{
+		points.Add(point->GetActorLocation());
+	}
+	return points;
+}
+
+void ATankPawn::SetPatrollingPoints(TArray<ATargetPoint*> NewPatrollingPoints)
+{
+	PatrollingPoints = NewPatrollingPoints;
+}
 
 FVector ATankPawn::GetTurretForwardVector()
 {
@@ -126,6 +134,11 @@ void ATankPawn::RotateTurretTo(FVector TargetPosition)
 FVector ATankPawn::GetEyesPosition()
 {
 	return CannonSetupPoint->GetComponentLocation();
+}
+
+void ATankPawn::SwapControllerTurret()
+{
+	SwapController = !SwapController;
 }
 
 void ATankPawn::BeginPlay()

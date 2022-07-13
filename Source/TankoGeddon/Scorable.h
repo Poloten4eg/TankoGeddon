@@ -22,5 +22,5 @@ class TANKOGEDDON_API IScorable
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual int GetPoint() const = 0;
+	virtual float GetPoints() = 0;
 };

@@ -19,6 +19,7 @@ void ATankController::SetupInputComponent()
 	InputComponent->BindAction("Fire", EInputEvent::IE_Pressed, this, &ATankController::Fire);
 	InputComponent->BindAction("FireSpecial", EInputEvent::IE_Pressed, this, &ATankController::FireSpecial);
 	InputComponent->BindAction("ChangeWeapon", EInputEvent::IE_Pressed, this, &ATankController::ChangeWeapon);
+	InputComponent->BindAction("SwapController",EInputEvent::IE_Pressed, this, &ATankController::OnSwapController);
 }
 
 void ATankController::Tick(float DeltaSeconds)
@@ -44,6 +45,12 @@ void ATankController::SetPawn(APawn* InPawn)
 	Super::SetPawn(InPawn);
 
 	TankPawn = Cast<ATankPawn>(InPawn);
+}
+
+void ATankController::OnSwapController()
+{
+	if(TankPawn)
+		TankPawn->SwapControllerTurret();
 }
 
 void ATankController::MoveForward(float Value)

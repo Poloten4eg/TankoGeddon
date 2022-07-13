@@ -57,6 +57,7 @@ void ACannon::Fire()
 			AProjectile* projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, ProjectileSpawnPoint->GetComponentLocation(), ProjectileSpawnPoint->GetComponentRotation());
 			if (projectile)
 			{
+				projectile->OnKilled.AddUObject(this, &ACannon::AddScore);
 				projectile->SetOwner(this);
 				projectile->Start();
 			}
@@ -117,6 +118,14 @@ void ACannon::CreateProjectilePool()
 		ProjectilePool = GetWorld()->SpawnActor<AProjectilePool>(ProjectilePoolClass, ProjectileSpawnPoint->GetComponentLocation(), ProjectileSpawnPoint->GetComponentRotation());
 }
 
+void ACannon::AddScore(float ScoreValue)
+{
+	if (ScoreChanged.IsBound())
+	{
+		ScoreChanged.Broadcast(ScoreValue);
+	}
+}
+
 void ACannon::BeginPlay()
 {
 	Super::BeginPlay();
@@ -132,7 +141,7 @@ void ACannon::Burst()
 		bCanFire = true;
 		CurrentBurts = 0;
 		Shells--;
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("Shells is: %d"), Shells));
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::Printf(TEXT("Shells is: %d"), Shells));
 		return;
 	}
 
@@ -141,11 +150,11 @@ void ACannon::Burst()
 
 	if (CannonType == ECannonType::FireProjectile)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Purple, FString::Printf(TEXT("Fire projectile")));
+		//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Purple, FString::Printf(TEXT("Fire projectile")));
 	}
 	else
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Purple, FString::Printf(TEXT("Fire trace")));
+		//GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::Purple, FString::Printf(TEXT("Fire trace")));
 	}
 
 	GetWorld()->GetTimerManager().SetTimer(BurstTimer, this, &ACannon::Burst, BurstInterval, false);

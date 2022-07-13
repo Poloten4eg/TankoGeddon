@@ -10,22 +10,18 @@ void ATankAIController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	TankPawn = Cast<ATankPawn>(GetPawn());
-	PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
-
-	FVector pawnLocation = TankPawn->GetActorLocation();
-	MovementAccurency = TankPawn->GetAccurency();
-	TArray<FVector> points = TankPawn->GetPatrollingPoints();
-	for (FVector point : points)
-	{
-		PattrollingPath.Add(point + pawnLocation);
-	}
-	CurrentPattrolingIndex = 0;
+	Initialize();
 }
 
 void ATankAIController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+
+	if(!TankPawn)
+		Initialize();
+
+	if(!TankPawn)
+		return;
 
 	TankPawn->MoveForward(1);
 
@@ -57,16 +53,15 @@ float ATankAIController::GetRotationValue()
 
 	float forwardAngle = FMath::RadiansToDegrees(acosf(FVector::DotProduct(forwardDirection, moveDirection)));
 	float RightAngle = FMath::RadiansToDegrees(acosf(FVector::DotProduct(rightDirection, moveDirection)));
+	//UE_LOG(LogTemp, Warning, TEXT("forward Angle: %f, RightAngle: %f"), forwardAngle, RightAngle);
 
-	float RotationValue = 0;
-	if (forwardAngle > 5)
-	{
-		RotationValue = 1;
-	}
+	float RotationValue = 1;
+	
 	if (RightAngle > 90)
 	{
 		RotationValue = -RotationValue;
 	}
+
 	return RotationValue;
 }
 
@@ -108,11 +103,6 @@ void ATankAIController::Fire()
 	TankPawn->Fire();
 }
 
-int ATankAIController::GetPoint() const
-{
-	return ScorePoints;
-}
-
 bool ATankAIController::IsPlayerSeen()
 {
 	FVector playerPos = PlayerPawn->GetActorLocation();
@@ -135,4 +125,22 @@ bool ATankAIController::IsPlayerSeen()
 	}
 	DrawDebugLine(GetWorld(), eyesPos, playerPos, FColor::Purple, false, 0.5f, 0, 10);
 	return false;
+}
+
+void ATankAIController::Initialize()
+{
+	TankPawn = Cast<ATankPawn>(GetPawn());
+	
+	if(!TankPawn)
+		return;
+	PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
+
+	FVector pawnLocation = TankPawn->GetActorLocation();
+	MovementAccurency = TankPawn->GetAccurency();
+	TArray<FVector> points = TankPawn->GetPatrollingPoints();
+	for (FVector point : points)
+	{
+		PattrollingPath.Add(point + pawnLocation);
+	}
+	CurrentPattrolingIndex = 0;
 }
